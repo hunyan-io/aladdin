@@ -1,0 +1,2 @@
+# aladdin
+Multipurpose discord bot.
