@@ -1,5 +1,6 @@
 const Command = require("../../core/Command");
 const Colors = require("../../enums/Colors");
+const { splitMessage } = require("../../utils/splitter");
 
 const EMPTY_CHARACTER = String.fromCharCode(173);
 
@@ -19,7 +20,7 @@ module.exports = new Command({
         );
     },
     execute({ message, guildData, prefix }) {
-        message.channel.send({
+        splitMessage({
             embed: {
                 title: "Command List",
                 color: Colors.PRIMARY,
@@ -29,6 +30,6 @@ module.exports = new Command({
                     inline: false
                 }))
             }
-        });
+        }).forEach(msg => message.channel.send(msg));
     }
 });

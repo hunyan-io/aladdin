@@ -11,6 +11,7 @@ class GuildData {
     async init() {
         let data = await database.guilds.findOne({ _id: this.guild.id });
         if (!data) {
+            // TODO: only create document in case a new change was made
             data = await database.guilds.insertOne({ _id: this.guild.id });
         }
         this.prefix = data.prefix || null;

@@ -96,6 +96,7 @@ function splitMessage(message) {
         }
 
         const fields = message.embed.fields;
+        message.embed.fields = [];
 
         if (typeof message.embed.description == "string") {
             const split = splitString(message.embed.description, index =>
@@ -104,7 +105,6 @@ function splitMessage(message) {
             message.embed.description = split.shift();
             messages.embedTotal += message.embed.description.length;
 
-            message.embed.fields = [];
             for (const splitContent of split) {
                 checkTotal(messages, splitContent.length + 1);
                 messages.main.embed.fields.push({
@@ -150,6 +150,5 @@ function splitMessage(message) {
 
 module.exports = {
     splitString,
-    splitMessage,
-    test
+    splitMessage
 };
