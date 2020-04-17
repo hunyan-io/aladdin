@@ -4,13 +4,14 @@ const Colors = require("../../enums/Colors");
 
 const axios = create({
     baseURL: "https://code.labstack.com/api/v1/",
-    timeout: 7000
+    timeout: 7000,
 });
 
 const ANNOYING_ERR = "/usr/bin/env: 'bash': No such file or directory\n";
 
 module.exports = new Command({
     name: "exec",
+    description: "Executes code in a specified programming language.",
     async run(language, content, channel) {
         // Patch to the api's error
         let data;
@@ -18,7 +19,7 @@ module.exports = new Command({
             data = (
                 await axios.post("/run", {
                     content,
-                    language
+                    language,
                 })
             ).data;
             if (data.stderr != ANNOYING_ERR) break;
@@ -36,10 +37,12 @@ module.exports = new Command({
             if (i == chunks - 1) {
                 footer = {};
                 footer.text = data.exit_code
-                    ? `Process finished in ${data.execution_time /
-                          1000000}s with exit code ${data.exit_code}`
-                    : `Code successfully executed in ${data.execution_time /
-                          1000000}s.`;
+                    ? `Process finished in ${
+                          data.execution_time / 1000000
+                      }s with exit code ${data.exit_code}`
+                    : `Code successfully executed in ${
+                          data.execution_time / 1000000
+                      }s.`;
                 footer.text += `\ncode.labstack.com`;
             }
             channel.send({
@@ -50,30 +53,40 @@ module.exports = new Command({
                     description:
                         "```\n" +
                         output.slice(i * 2042, (i + 1) * 2042 - 1) +
-                        "```"
-                }
+                        "```",
+                },
             });
         }
     },
     async init() {
-        //fetch language list
-        this.languageList = (await axios.get("/languages")).data;
-        this.languages = this.languageList.reduce((languages, language) => {
+        const aliases = {
+            javascript: "js",
+            python: "py",
+            csharp: "cs",
+            cpp: "c++",
+        };
+
+        const languageList = (await axios.get("/languages")).data;
+        this.languages = languageList.reduce((languages, language) => {
             languages[language.id] = language.id;
-            return languages;
-        }, {});
-
-        //alternatives
-        this.languages.js = this.languages.javascript;
-        this.languages.py = this.languages.python;
-        this.languages.cs = this.languages.csharp;
-        this.languages["c++"] = this.languages.cpp;
-
-        //register subcommands
-        for (const [language, id] of Object.entries(this.languages)) {
-            this.subcommand({
-                name: language,
-
+            const command = {
+                name: language.id,
+                description: {
+                    general: "v" + language.version,
+                    detailed: `Runs ${language.name} v${language.version}`,
+                },
+                arguments: [
+                    {
+                        name: "code",
+                        description:
+                            "The code to run, wrapped inside \\` \\` or \\`\\`\\` \\`\\`\\`",
+                        optional: false,
+                    },
+                ],
+                examples: [
+                    `&command& \`${language.code}\``,
+                    `&command& \`\`\`${language.id}\n${language.code}\`\`\``,
+                ],
                 async execute(parameters) {
                     const match = parameters.command.content.match(
                         /^(```|`)([a-zA-Z+-]*\n+)?(.*)\1/s
@@ -90,8 +103,17 @@ module.exports = new Command({
                     }
 
                     await this.run({ id }, code, parameters.message.channel);
-                }
-            });
+                },
+            };
+            if (aliases[language.id]) {
+                command.aliases = [aliases[language.id]];
+            }
+            this.subcommand(command);
+            return languages;
+        }, {});
+
+        for (const [id, alias] of Object.entries(aliases)) {
+            this.languages[alias] = this.languages[id];
         }
     },
     async execute(parameters) {
@@ -119,5 +141,5 @@ module.exports = new Command({
             code,
             parameters.message.channel
         );
-    }
+    },
 });

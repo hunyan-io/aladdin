@@ -3,7 +3,9 @@ const { client } = require("../../clients");
 
 module.exports = new Command({
     name: "js",
+    description: "Executes javascript in the bot's environment.",
     aliases: ["javascript"],
+    private: true,
     execute(parameters) {
         if (parameters.message.author.id !== "219451307247796224") return;
 
@@ -12,7 +14,7 @@ module.exports = new Command({
         );
         if (!match) {
             throw new Error(
-                `Invalid syntax for subcommand ${parameters.command.name} of command ${parameters.command.super.name}`
+                `Invalid syntax for command ${parameters.command.name}.`
             );
         }
 
@@ -29,5 +31,5 @@ module.exports = new Command({
         };
 
         eval(code);
-    }
+    },
 });

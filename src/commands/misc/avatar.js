@@ -11,9 +11,9 @@ module.exports = new Command({
                 title: `${user.username}'s avatar`,
                 color: Colors.PRIMARY,
                 image: {
-                    url: user.displayAvatarURL({ dynamic: true, size: 512 })
-                }
-            }
+                    url: user.displayAvatarURL({ dynamic: true, size: 512 }),
+                },
+            },
         });
-    }
+    },
 });

@@ -1,8 +1,8 @@
 const GuildData = require("./GuildData");
 
 class MessageCommand {
-    constructor(name, content, parent=null) {
-        this.name = name;
+    constructor(name, content, parent = null) {
+        this.name = name.toLowerCase();
         this.content = content;
         this.super = parent;
     }
@@ -14,7 +14,7 @@ class MessageCommand {
             parent = parent.super;
         }
 
-        return names.join(' ');
+        return names.join(" ");
     }
 }
 
@@ -25,9 +25,10 @@ class CommandParameters {
         this.prefix = null;
         this.command = null;
     }
-    static async from(message) {  
-        const _this = new this(message);      
-        _this.guildData = message.guild && await GuildData.from(message.guild);
+    static async from(message) {
+        const _this = new this(message);
+        _this.guildData =
+            message.guild && (await GuildData.from(message.guild));
         _this.prefix =
             (_this.guildData && _this.guildData.prefix) || process.env.PREFIX;
 

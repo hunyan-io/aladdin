@@ -5,10 +5,22 @@ class Command {
         if (!command.name) {
             throw new Error("Missing command name.");
         }
+        if (typeof command.description == "string") {
+            command.description = {
+                general: command.description,
+                detailed: command.description,
+            };
+        } else if (
+            !command.description ||
+            !command.description.general ||
+            !command.description.detailed
+        ) {
+            throw new Error(`Missing description for command ${command.name}`);
+        }
         Object.assign(this, command);
         this.name = this.name.toLowerCase();
         this.aliases = this.aliases
-            ? this.aliases.map(name => name.toLowerCase())
+            ? this.aliases.map((name) => name.toLowerCase())
             : [];
         this.ready = false;
         this.subcommands = null;
@@ -25,7 +37,7 @@ class Command {
             if (this.init) {
                 //in case a base init method already exists
                 const _init = this.init.bind(this);
-                this.init = async function() {
+                this.init = async function () {
                     //make sure the base init method is called only once
                     delete _this.init;
 
@@ -39,7 +51,7 @@ class Command {
             } else {
                 //in case no base init method exists
                 //add a base init method
-                this.init = async function() {
+                this.init = async function () {
                     //make sure the base init method is called only once
                     delete _this.init;
 
