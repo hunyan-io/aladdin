@@ -7,12 +7,14 @@ class Command {
         }
         if (typeof command.description == "string") {
             command.description = {
-                general: command.description,
                 detailed: command.description,
             };
+            if (!command.hidden) {
+                command.description.general = command.description.detailed;
+            }
         } else if (
             !command.description ||
-            !command.description.general ||
+            (!command.hidden && !command.description.general) ||
             !command.description.detailed
         ) {
             throw new Error(`Missing description for command ${command.name}`);

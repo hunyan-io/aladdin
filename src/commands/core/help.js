@@ -20,12 +20,14 @@ module.exports = new Command({
             optional: true,
         },
     ],
-    examples: ["&command&", "&command& exec", "&command& exec js"],
+    examples: ["{{command}}", "{{command}} exec", "{{command}} exec js"],
     async fieldsFilter(commands, parameters, subcmd) {
-        commands = [...new Set(commands)];
         const fields = [];
-        for (const command of commands) {
-            if (await CommandManager.canUse(command, parameters, false)) {
+        for (const command of new Set(commands)) {
+            if (
+                !command.hidden &&
+                (await CommandManager.canUse(command, parameters, false))
+            ) {
                 fields.push({
                     name: `:low_brightness: **\`${
                         subcmd ? "" : parameters.prefix
@@ -106,14 +108,22 @@ module.exports = new Command({
                 "\n\n**Example:**\n" +
                 command.examples
                     .map((exp) =>
-                        exp.replace(
-                            /&command&/g,
-                            parameters.prefix + commandName
-                        )
+                        exp.replace(/{{(.*?)}}/g, (_, key) => {
+                            if (key == "command") {
+                                return parameters.prefix + commandName;
+                            } else if (key == "command_name") {
+                                return commandName;
+                            } else if (key == "prefix") {
+                                return parameters.prefix;
+                            }
+                        })
                     )
                     .join("\n");
         }
-        if (command.subcommands) {
+        if (
+            command.subcommands &&
+            Object.values(command.subcommands).some((subcmd) => !subcmd.hidden)
+        ) {
             description += "\n\n**Subcommands:**";
             fields = await this.fieldsFilter(
                 Object.values(command.subcommands),

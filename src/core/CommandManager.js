@@ -88,7 +88,7 @@ class CommandManager {
                 }
                 return commands;
             }, {});
-        for (const command of Object.values(this.commands)) {
+        for (const command of new Set(Object.values(this.commands))) {
             if (command.init) {
                 Promise.resolve(command.init())
                     .then(() => {
@@ -113,6 +113,11 @@ class CommandManager {
         }
     }
     static async canUse(command, parameters, feedback = true) {
+        if (command.__proto__.name) {
+            if (!(await this.canUse(command.__proto__, parameters, feedback))) {
+                return false;
+            }
+        }
         if (command.private) {
             if (parameters.message.author.id != process.env.OWNER_ID) {
                 return false;

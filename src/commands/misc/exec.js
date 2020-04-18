@@ -11,7 +11,26 @@ const ANNOYING_ERR = "/usr/bin/env: 'bash': No such file or directory\n";
 
 module.exports = new Command({
     name: "exec",
+    aliases: ["execute"],
     description: "Executes code in a specified programming language.",
+    arguments: [
+        {
+            name: "language",
+            description: "A language from the list below to run the code in.",
+            optional: true,
+        },
+        {
+            name: "code",
+            description:
+                "The code to run wrapped in \\` \\` or \\`\\`\\` \\`\\`\\`. In case language was not specified, this must take the form \\`\\`\\`language\ncode\\`\\`\\`",
+            optional: false,
+        },
+    ],
+    examples: [
+        "{{command}} javascript `console.log('Hello, World!');`",
+        "{{command}} ```py\nprint('Hello, World!')```",
+        "For more examples about a specific language, use {{prefix}}help {{command_name}} language",
+    ],
     async run(language, content, channel) {
         // Patch to the api's error
         let data;
@@ -72,9 +91,9 @@ module.exports = new Command({
             const command = {
                 name: language.id,
                 description: {
-                    general: "v" + language.version,
-                    detailed: `Runs ${language.name} v${language.version}`,
+                    detailed: `Runs ${language.name} ${language.version}.`,
                 },
+                hidden: true,
                 arguments: [
                     {
                         name: "code",
@@ -84,8 +103,8 @@ module.exports = new Command({
                     },
                 ],
                 examples: [
-                    `&command& \`${language.code}\``,
-                    `&command& \`\`\`${language.id}\n${language.code}\`\`\``,
+                    `{{command}} \`${language.code}\``,
+                    `{{command}} \`\`\`${language.id}\n${language.code}\`\`\``,
                 ],
                 async execute(parameters) {
                     const match = parameters.command.content.match(
@@ -102,7 +121,11 @@ module.exports = new Command({
                         code = syntax + code;
                     }
 
-                    await this.run({ id }, code, parameters.message.channel);
+                    await this.run(
+                        { id: language.id },
+                        code,
+                        parameters.message.channel
+                    );
                 },
             };
             if (aliases[language.id]) {
@@ -111,6 +134,12 @@ module.exports = new Command({
             this.subcommand(command);
             return languages;
         }, {});
+
+        this.arguments[1].description +=
+            "\n\n**Language List:** " +
+            Object.keys(this.languages)
+                .map((lang) => `\`${lang}\``)
+                .join(", ");
 
         for (const [id, alias] of Object.entries(aliases)) {
             this.languages[alias] = this.languages[id];
