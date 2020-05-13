@@ -1,16 +1,14 @@
 const Discord = require("discord.js");
 const MongoClient = require("mongodb").MongoClient;
-const mongomock = require("./utils/mongomock");
+const MongoMock = require("./utils/MongoMock");
 
 const instances = {};
 
-instances.client = new Discord.Client({
-    messageCacheMaxSize: 0
-});
+instances.client = new Discord.Client();
 
 instances.database = {};
 
-const init = client => {
+const onInit = (client) => {
     const mongodb = client.db(process.env.DB_NAME);
 
     instances.database.mongodb = mongodb;
@@ -19,17 +17,19 @@ const init = client => {
     instances.client.login(process.env.TOKEN);
 };
 
-if (process.env.DB_URL && process.env.DB_NAME) {
-    MongoClient.connect(process.env.DB_URL)
-        .then(init)
-        .catch(err => {
-            throw err;
-        });
-} else {
-    // Launch bot without database FOR DEBUG PURPOSES.
-    console.log("WARNING: BOT IS RUNNING WITHOUT A DATABASE.");
+instances.init = () => {
+    if (process.env.DB_URL && process.env.DB_NAME) {
+        MongoClient.connect(process.env.DB_URL)
+            .then(onInit)
+            .catch((err) => {
+                throw err;
+            });
+    } else {
+        // Launch bot without database FOR DEBUG PURPOSES.
+        console.log("WARNING: BOT IS RUNNING WITHOUT A DATABASE.");
 
-    init(mongomock);
-}
+        onInit(MongoMock);
+    }
+};
 
 module.exports = instances;

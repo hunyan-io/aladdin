@@ -1,6 +1,7 @@
 const EMPTY_CHARACTER = String.fromCharCode(173);
 
 function splitString(str, maxLen) {
+    if (!str) return [""];
     const result = [];
     const evalMaxLen = typeof maxLen == "function";
 
@@ -45,8 +46,8 @@ function checkTotal(messages, length) {
                 fields: [],
                 footer: messages.main.embed.footer,
                 image: messages.main.embed.image,
-                timestamp: messages.main.embed.timestamp
-            }
+                timestamp: messages.main.embed.timestamp,
+            },
         };
         messages.list.push(message);
         delete messages.main.embed.footer;
@@ -56,7 +57,11 @@ function checkTotal(messages, length) {
     }
 }
 
-function splitMessage(message) {
+function splitMessage(message, options = {}) {
+    options.content = options.content || {};
+    options.embed = options.embed || {};
+    options.content.prepend = options.content.prepend || ""; //done
+    options.embed.prepend = options.embed.prepend || ""; //not done
     if (typeof message == "string") {
         message = { content: message };
     }
@@ -64,15 +69,18 @@ function splitMessage(message) {
     const messages = {
         list: [],
         main: message,
-        embedTotal: 0
+        embedTotal: 0,
     };
 
     if (typeof message.content == "string") {
-        messages.list = splitString(message.content, 2000).map(
-            splitContent => ({
-                content: splitContent
-            })
-        );
+        messages.list = splitString(message.content, (index) =>
+            index == 0 ? 2000 : 2000 - options.content.prepend.length
+        ).map((splitContent, index) => ({
+            content:
+                index == 0
+                    ? splitContent
+                    : options.content.prepend + splitContent,
+        }));
         messages.list[messages.list.length - 1] = Object.assign(
             message,
             messages.list[messages.list.length - 1]
@@ -99,7 +107,7 @@ function splitMessage(message) {
         message.embed.fields = [];
 
         if (typeof message.embed.description == "string") {
-            const split = splitString(message.embed.description, index =>
+            const split = splitString(message.embed.description, (index) =>
                 index == 0 ? 2048 : 1024
             );
             message.embed.description = split.shift();
@@ -110,7 +118,7 @@ function splitMessage(message) {
                 messages.main.embed.fields.push({
                     name: EMPTY_CHARACTER,
                     value: splitContent,
-                    inline: false
+                    inline: false,
                 });
             }
         }
@@ -119,10 +127,10 @@ function splitMessage(message) {
                 fields[i].name = capString(fields[i].name, 256);
                 if (fields[i].value.length > 1024) {
                     const splitFields = splitString(fields[i].value, 1024).map(
-                        splitContent => ({
+                        (splitContent) => ({
                             name: EMPTY_CHARACTER,
                             value: splitContent,
-                            inline: false
+                            inline: false,
                         })
                     );
                     splitFields[0].name = fields[i].name;
@@ -150,5 +158,5 @@ function splitMessage(message) {
 
 module.exports = {
     splitString,
-    splitMessage
+    splitMessage,
 };

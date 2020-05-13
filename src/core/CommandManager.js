@@ -9,6 +9,10 @@ const GuildData = require("./GuildData");
 const CommandParameters = require("./CommandParameters");
 const Colors = require("../enums/Colors");
 
+const categories = require("../commands");
+const PRIVATE_COGS =
+    process.env.PRIVATE_COGS && process.env.PRIVATE_COGS.split(" ");
+
 async function hasPermissions(permissions, member, defaultChannel, sendError) {
     if (!permissions || !member) return;
     for (const entry of permissions) {
@@ -62,16 +66,37 @@ class CommandManager {
     static commands;
 
     static init() {
+        const commandNames = new Set();
+        this.categories = Object.entries(categories).reduce(
+            (obj, [dir, name]) => {
+                obj[dir] = {
+                    name: name,
+                };
+                return obj;
+            },
+            {}
+        );
         this.commands = fs
             .readdirSync(path.join(__dirname, "..", "commands"))
-            .map((dir) =>
-                fs
+            .filter((dir) => this.categories.hasOwnProperty(dir))
+            .map((dir) => {
+                const isPrivate = PRIVATE_COGS.includes(dir);
+                const commands = fs
                     .readdirSync(path.join(__dirname, "..", "commands", dir))
-                    .filter((commandName) => !commandName.startsWith("_"))
-                    .map((commandName) =>
-                        require(`../commands/${dir}/${commandName}`)
+                    .filter(
+                        (commandName) =>
+                            commandName.endsWith(".js") &&
+                            commandName != "index.js"
                     )
-            )
+                    .map((commandName) => {
+                        const command = require(`../commands/${dir}/${commandName}`);
+                        commandNames.add(command.name);
+                        if (isPrivate) command.private = true;
+                        return command;
+                    });
+                this.categories[dir].commands = commands;
+                return commands;
+            })
             .flat()
             .reduce((commands, command) => {
                 if (commands[command.name]) {
@@ -109,12 +134,23 @@ class CommandManager {
     static async execute(message) {
         const parameters = await CommandParameters.from(message);
         if (this.commands[parameters.command.name]) {
-            this.evaluate(this.commands[parameters.command.name], parameters);
+            await this.evaluate(
+                this.commands[parameters.command.name],
+                parameters
+            );
         }
     }
     static async canUse(command, parameters, feedback = true) {
         if (command.__proto__.name) {
             if (!(await this.canUse(command.__proto__, parameters, feedback))) {
+                return false;
+            }
+        }
+        if (!command.enabled) {
+            return false;
+        }
+        if (command.gateway) {
+            if (!(await Promise.resolve(command.gateway()))) {
                 return false;
             }
         }
@@ -182,7 +218,7 @@ class CommandManager {
                         description:
                             `The following error occured while executing command ${command.name}:` +
                             "```" +
-                            e.toString().slice(0, 1500) +
+                            (e.stack || e.toString()).slice(0, 1500) +
                             "```",
                     },
                 });

@@ -31,7 +31,7 @@ module.exports = new Command({
         "{{command}} ```py\nprint('Hello, World!')```",
         "For more examples about a specific language, use {{prefix}}help {{command_name}} language",
     ],
-    async run(language, content, channel) {
+    async run(language, content, parameters) {
         // Patch to the api's error
         let data;
         for (let j = 0; j < 5; j++) {
@@ -64,7 +64,7 @@ module.exports = new Command({
                       }s.`;
                 footer.text += `\ncode.labstack.com`;
             }
-            channel.send({
+            parameters.respond({
                 embed: {
                     color,
                     title,
@@ -121,11 +121,7 @@ module.exports = new Command({
                         code = syntax + code;
                     }
 
-                    await this.run(
-                        { id: language.id },
-                        code,
-                        parameters.message.channel
-                    );
+                    await this.run({ id: language.id }, code, parameters);
                 },
             };
             if (aliases[language.id]) {
@@ -165,10 +161,6 @@ module.exports = new Command({
             throw new Error(`Language ${language} is not supported.`);
         }
 
-        await this.run(
-            { id: this.languages[language] },
-            code,
-            parameters.message.channel
-        );
+        await this.run({ id: this.languages[language] }, code, parameters);
     },
 });

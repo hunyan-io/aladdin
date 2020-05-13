@@ -15,7 +15,8 @@
     "axios": "^0.19.2",
     "discord.js": "^12.0.2",
     "dotenv": "^8.2.0",
-    "mongodb": "^3.5.5"
+    "mongodb": "^3.5.5",
+    "shortid": "^2.2.15"
   },
   "engines": {
     "node": "13.8.x"

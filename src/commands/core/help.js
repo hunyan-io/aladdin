@@ -1,7 +1,7 @@
 const Command = require("../../core/Command");
 const CommandManager = require("../../core/CommandManager");
 const Colors = require("../../enums/Colors");
-const { splitMessage } = require("../../utils/splitter");
+const { splitMessage } = require("../../utils/Splitter");
 
 const EMPTY_CHARACTER = String.fromCharCode(173);
 

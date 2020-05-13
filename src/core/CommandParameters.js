@@ -6,15 +6,19 @@ class MessageCommand {
         this.content = content;
         this.super = parent;
     }
-    get fullname() {
+    get nameList() {
         let names = [this.name];
         let parent = this.super;
+
         while (parent) {
             names.unshift(parent.name);
             parent = parent.super;
         }
 
-        return names.join(" ");
+        return names;
+    }
+    get fullname() {
+        return this.nameList.join(" ");
     }
 }
 

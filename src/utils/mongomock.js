@@ -1,6 +1,6 @@
-const mongomock = {};
+const MongoMock = {};
 
-mongomock.db = function() {
+MongoMock.db = function () {
     return new Database();
 };
 
@@ -19,4 +19,4 @@ class Collection {
     }
 }
 
-module.exports = mongomock;
+module.exports = MongoMock;

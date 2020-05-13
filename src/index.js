@@ -1,5 +1,7 @@
 require("dotenv").config();
-const { client } = require("./clients");
+require("./extension");
+
+const { client, init } = require("./clients");
 
 const CommandManager = require("./core/CommandManager");
 
@@ -7,20 +9,18 @@ client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}!`);
 });
 
-client.on("messageUpdate", async message => {
+const onMessage = async (message) => {
     if (message.author.bot) return;
 
     if (await CommandManager.isCommand(message)) {
         CommandManager.execute(message);
     }
-});
+};
 
-client.on("message", async message => {
-    if (message.author.bot) return;
+client.on("message", onMessage);
 
-    if (await CommandManager.isCommand(message)) {
-        CommandManager.execute(message);
-    }
-});
+client.on("messageUpdate", (_, message) => onMessage(message));
 
 CommandManager.init();
+
+init();

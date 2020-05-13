@@ -26,6 +26,8 @@ class Command {
             : [];
         this.ready = false;
         this.subcommands = null;
+        this.private = !!this.private;
+        this.enabled = this.enabled !== undefined ? !!this.enabled : true;
     }
     extend(command) {
         if (command.constructor != this.constructor) {
