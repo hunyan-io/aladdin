@@ -14,6 +14,11 @@ module.exports = new Command({
         });
     },
     async execute({ message, command }) {
+        if (!command.content) {
+            return message.channel.send(
+                `Specifiy a game name or id.\nUse **${command.prefix}help game** for a list of available games.`
+            );
+        }
         const user = Game.parseId(command.content);
         if (!user) {
             throw new Error(`There is no game with that name or id.`);

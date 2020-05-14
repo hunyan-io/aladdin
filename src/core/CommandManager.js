@@ -218,7 +218,7 @@ class CommandManager {
                         description:
                             `The following error occured while executing command ${command.name}:` +
                             "```" +
-                            (e.stack || e.toString()).slice(0, 1500) +
+                            e.toString().slice(0, 1500) +
                             "```",
                     },
                 });
