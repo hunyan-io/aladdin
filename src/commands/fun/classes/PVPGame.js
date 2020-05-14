@@ -2,11 +2,18 @@ const Emojis = require("../../../enums/Emojis");
 const Game = require("./Game");
 
 class PVPGame extends Game {
-    constructor(host, channel, userClass) {
+    constructor(host, options = {}, userClass) {
         super(host, userClass);
-        this.add(host, channel);
+        Object.assign(
+            this,
+            {
+                broadcastDM: true,
+            },
+            options
+        );
+        this.add(host);
     }
-    static from(message) {
+    static from(message, ...args) {
         const user = message.mentions.users.first();
         if (
             message.mentions.users.size > 1 ||
@@ -14,13 +21,10 @@ class PVPGame extends Game {
         ) {
             throw new Error("Mention only one user other than yourself.");
         }
-        const game = super.from(message);
+        const game = super.from(message, ...args);
         game.broadcast.add(message.channel);
         if (user) {
-            message.author.createDM().then((dmChannel) => {
-                game.broadcast.add(dmChannel);
-                game.add(user);
-            });
+            game.add(user);
         } else {
             message.channel.send(
                 `A new game was created.\nGame Id: ${game.id}`
@@ -28,11 +32,21 @@ class PVPGame extends Game {
         }
         return game;
     }
-    add(user, channel) {
-        super.add(user, channel);
-        if (this.users.length == 2) {
-            this.locked = true;
-            this.start();
+    add(user) {
+        const callback = (dmChannel) => {
+            if (dmChannel) {
+                user.game.broadcast.add(dmChannel);
+            }
+            super.add(user);
+            if (this.users.length == 2) {
+                this.locked = true;
+                this.start();
+            }
+        };
+        if (this.broadcastDM) {
+            user.createDM().then(callback);
+        } else {
+            callback();
         }
     }
     start() {

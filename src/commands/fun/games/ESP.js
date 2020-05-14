@@ -13,8 +13,8 @@ const cards = {
 const deck = ["Konoha", "Taki", "Kiri", "Suna", "Kumo"];
 
 class ESP extends CardsGame {
-    constructor(host, channel) {
-        super(host, channel, {
+    constructor(host) {
+        super(host, {
             cards: cards,
             interRoundTimeout: 5,
             maxRound: 3,

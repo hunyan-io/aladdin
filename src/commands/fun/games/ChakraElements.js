@@ -26,8 +26,8 @@ function decide(user1, user2) {
 }
 
 class ChakraElements extends CardsGame {
-    constructor(host, channel) {
-        super(host, channel, {
+    constructor(host) {
+        super(host, {
             cards: cards,
             interRoundTimeout: 0,
             maxRound: 5,

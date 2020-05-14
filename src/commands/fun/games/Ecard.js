@@ -25,8 +25,8 @@ function decide(user1, user2) {
 }
 
 class Ecard extends CardsGame {
-    constructor(host, channel) {
-        super(host, channel, {
+    constructor(host) {
+        super(host, {
             cards: cards,
             interRoundTimeout: 5,
             maxRound: 3,

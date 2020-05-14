@@ -48,11 +48,11 @@ class Game {
         if (!user || !user.game || id != user.game.id) return;
         return user;
     }
-    static from(message) {
+    static from(message, ...args) {
         if (message.author.game) {
             throw new Error("You're already in a game.");
         }
-        return new this(message.author);
+        return new this(message.author, ...args);
     }
     add(user) {
         if (this.users.find((player) => player.user.id == user.id)) {

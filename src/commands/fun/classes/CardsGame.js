@@ -7,8 +7,8 @@ const EMPTY = {
 };
 
 class CardUser extends GameUser {
-    constructor(user, game, channel) {
-        super(user, game, channel);
+    constructor(user, game) {
+        super(user, game);
         this.turn = false;
         this.points = 0;
         this.card = null;
@@ -33,8 +33,8 @@ class CardUser extends GameUser {
 }
 
 class CardsGame extends PVPGame {
-    constructor(host, channel, options = {}) {
-        super(host, channel, CardUser);
+    constructor(host, options = {}) {
+        super(host, {}, CardUser);
         options = Object.assign(
             this,
             {

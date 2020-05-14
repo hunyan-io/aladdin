@@ -23,7 +23,6 @@ module.exports = new Command({
         if (!user) {
             throw new Error(`There is no game with that name or id.`);
         }
-        user.game.broadcast.add(await message.author.createDM());
         user.game.add(message.author);
     },
 }).subcommand({
