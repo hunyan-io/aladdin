@@ -10,8 +10,12 @@ const CommandParameters = require("./CommandParameters");
 const Colors = require("../enums/Colors");
 
 const categories = require("../commands");
-const PRIVATE_COGS =
-    process.env.PRIVATE_COGS && process.env.PRIVATE_COGS.split(" ");
+
+// These env vars are temp.
+const PRIVATE_COGS = process.env.PRIVATE_COGS
+    ? process.env.PRIVATE_COGS.split(" ")
+    : [];
+const CHANNEL_BOUND = process.env.CHANNEL_BOUND;
 
 async function hasPermissions(permissions, member, defaultChannel, sendError) {
     if (!permissions || !member) return;
@@ -145,6 +149,9 @@ class CommandManager {
             if (!(await this.canUse(command.__proto__, parameters, feedback))) {
                 return false;
             }
+        }
+        if (CHANNEL_BOUND && command.message.channel.id !== CHANNEL_BOUND) {
+            return false;
         }
         if (!command.enabled) {
             return false;
