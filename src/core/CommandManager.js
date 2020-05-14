@@ -150,7 +150,10 @@ class CommandManager {
                 return false;
             }
         }
-        if (CHANNEL_BOUND && command.message.channel.id !== CHANNEL_BOUND) {
+        if (
+            CHANNEL_BOUND &&
+            parameters.command.message.channel.id !== CHANNEL_BOUND
+        ) {
             return false;
         }
         if (!command.enabled) {
