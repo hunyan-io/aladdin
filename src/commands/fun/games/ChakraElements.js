@@ -40,13 +40,9 @@ class ChakraElements extends CardsGame {
         for (const gameUser of this.users) {
             gameUser.deck = deck;
         }
-        this.setCards()
-            .then(() => {
-                return this.nextRound();
-            })
-            .then(() => {
-                this.addJumpTo();
-            });
+        this.setCards().then(() => {
+            return this.nextRound();
+        });
     }
     nextRound() {
         if (!super.nextRound()) return;

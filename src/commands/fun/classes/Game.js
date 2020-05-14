@@ -28,7 +28,6 @@ function alphaToNum(a) {
 
 class Game {
     constructor(host, userClass = GameUser) {
-        this.channels = new Set();
         this.users = [];
         this.host = host;
         this.userClass = userClass;
@@ -53,18 +52,16 @@ class Game {
         if (message.author.game) {
             throw new Error("You're already in a game.");
         }
-        return new this(message.author, message.channel);
+        return new this(message.author);
     }
-    add(user, channel) {
+    add(user) {
         if (this.users.find((player) => player.user.id == user.id)) {
             throw new Error("You've already joined.");
         }
         if (this.locked) {
             throw new Error("The game is locked.");
         }
-        this.users.push(new this.userClass(user, this, channel));
-        this.channels.add(channel);
-        this.broadcast.add(channel);
+        this.users.push(new this.userClass(user, this));
         user.game = this;
     }
     destroy() {

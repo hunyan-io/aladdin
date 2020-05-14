@@ -10,34 +10,23 @@ class PVPGame extends Game {
         const user = message.mentions.users.first();
         if (
             message.mentions.users.size > 1 ||
-            (user && user.id == message.author.id)
+            (user && (user.id == message.author.id || user.bot))
         ) {
             throw new Error("Mention only one user other than yourself.");
         }
         const game = super.from(message);
+        game.broadcast.add(message.channel);
         if (user) {
-            game.add(user, message.channel);
+            message.author.createDM().then((dmChannel) => {
+                game.broadcast.add(dmChannel);
+                game.add(user);
+            });
         } else {
             message.channel.send(
                 `A new game was created.\nGame Id: ${game.id}`
             );
         }
         return game;
-    }
-    addJumpTo() {
-        for (const gameUser of this.users) {
-            if (gameUser.channel.guild) {
-                const message = this.broadcast.channels.find(
-                    (broadcastChannel) =>
-                        broadcastChannel.channel.id == gameUser.channel.id
-                ).messages[0];
-                gameUser.send({
-                    embed: {
-                        description: `[Jump to game message.](https://discordapp.com/channels/${gameUser.channel.guild.id}/${gameUser.channel.id}/${message.id})`,
-                    },
-                });
-            }
-        }
     }
     add(user, channel) {
         super.add(user, channel);
@@ -62,7 +51,7 @@ class PVPGame extends Game {
             .join("\n")}`;
         if (gameOver) {
             if (quitUser) {
-                message += `**${quitUser.tag}** left the game.`;
+                message += `\n**${quitUser.tag}** left the game.`;
             } else {
                 if (this.users[0].points == this.users[1].points) {
                     message += "\nThe game ended in a draw.";

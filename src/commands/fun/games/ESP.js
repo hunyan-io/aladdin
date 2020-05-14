@@ -61,9 +61,6 @@ class ESP extends CardsGame {
                 include: [2, 3, 4],
             }),
         ]).then(() => {
-            if (this.round == 1 && this.play == 1) {
-                this.addJumpTo();
-            }
             this.playing = true;
         });
     }

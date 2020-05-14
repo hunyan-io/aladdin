@@ -6,10 +6,9 @@ const EMPTY = {
 };
 
 class GameUser {
-    constructor(user, game, channel) {
+    constructor(user, game) {
         this.user = user;
         this.game = game;
-        this.channel = channel;
         this.messages = [];
     }
     send(message, cache = true) {
