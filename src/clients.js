@@ -4,7 +4,9 @@ const MongoMock = require("./utils/MongoMock");
 
 const instances = {};
 
-instances.client = new Discord.Client();
+instances.client = new Discord.Client({
+    fetchAllMembers: true,
+});
 
 instances.database = {};
 
