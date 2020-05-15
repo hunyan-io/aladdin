@@ -3,6 +3,7 @@ const path = require("path");
 
 const Game = require("./classes/Game");
 const Command = require("../../core/Command");
+const Emojis = require("../../enums/Emojis");
 
 module.exports = new Command({
     name: "game",
@@ -34,5 +35,6 @@ module.exports = new Command({
             throw new Error("You are not ingame.");
         }
         game.quit(message.author);
+        message.react(Emojis.checkmark);
     },
 });

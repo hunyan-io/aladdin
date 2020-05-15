@@ -52,6 +52,9 @@ class CardsGame extends PVPGame {
         this.round = 0;
         this.playing = false;
     }
+    start() {
+        this.updateScores();
+    }
     nextRound() {
         this.round++;
         if (this.round > this.maxRound) {
@@ -184,6 +187,47 @@ class CardsGame extends PVPGame {
                     },
                 },
             });
+        }
+    }
+    updateScores(gameOver = false, quitUser) {
+        let message = `**Game ${
+            gameOver ? "Over" : "Start"
+        }**\nPlayers:\n${this.users
+            .map(
+                (gameUser) =>
+                    `**${gameUser.name}**: ${gameUser.points} point${
+                        gameUser.points != 1 ? "s" : ""
+                    }`
+            )
+            .join("\n")}`;
+        if (gameOver) {
+            if (quitUser) {
+                message += `\n**${quitUser.tag}** left the game.`;
+            } else {
+                if (this.users[0].points == this.users[1].points) {
+                    message += "\nThe game ended in a draw.";
+                } else {
+                    const winner =
+                        this.users[0].points > this.users[1].points
+                            ? this.users[0]
+                            : this.users[1];
+                    message += `\n**${winner.name}** won the game.`;
+                }
+            }
+        }
+        this.broadcast.edit(0, message).finally(() => {
+            if (gameOver) {
+                this.broadcast.reduce(0);
+                this.destroy();
+            }
+        });
+    }
+    quit(user) {
+        if (this.users.length >= 2) {
+            this.updateScores(true, user);
+            super.quit(user, false);
+        } else {
+            super.quit(user);
         }
     }
     get lastRound() {

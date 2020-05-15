@@ -21,6 +21,9 @@ class PVPGame extends Game {
         ) {
             throw new Error("Mention only one user other than yourself.");
         }
+        if (user && user.game) {
+            throw new Error("Mentioned user is already ingame.");
+        }
         const game = super.from(message, ...args);
         game.broadcast.add(message.channel);
         if (user) {
@@ -49,42 +52,6 @@ class PVPGame extends Game {
             callback();
         }
     }
-    start() {
-        this.updateScores();
-    }
-    updateScores(gameOver = false, quitUser) {
-        let message = `**Game ${
-            gameOver ? "Over" : "Start"
-        }**\nPlayers:\n${this.users
-            .map(
-                (gameUser) =>
-                    `**${gameUser.name}**: ${gameUser.points} point${
-                        gameUser.points != 1 ? "s" : ""
-                    }`
-            )
-            .join("\n")}`;
-        if (gameOver) {
-            if (quitUser) {
-                message += `\n**${quitUser.tag}** left the game.`;
-            } else {
-                if (this.users[0].points == this.users[1].points) {
-                    message += "\nThe game ended in a draw.";
-                } else {
-                    const winner =
-                        this.users[0].points > this.users[1].points
-                            ? this.users[0]
-                            : this.users[1];
-                    message += `\n**${winner.name}** won the game.`;
-                }
-            }
-        }
-        this.broadcast.edit(0, message).finally(() => {
-            if (gameOver) {
-                this.broadcast.reduce(0);
-                this.destroy();
-            }
-        });
-    }
     setEvent(message, gameUser) {
         message.react(Emojis.checkmark);
         message.on("reactionAdd", (reaction, user) => {
@@ -103,10 +70,8 @@ class PVPGame extends Game {
         }
         super.destroy();
     }
-    quit(user) {
-        if (this.users.length >= 2) {
-            this.updateScores(true, user);
-        } else {
+    quit(user, destroy = true) {
+        if (destroy) {
             this.destroy();
         }
         super.quit(user);
