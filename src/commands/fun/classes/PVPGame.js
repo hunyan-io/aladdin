@@ -35,7 +35,7 @@ class PVPGame extends Game {
     add(user) {
         const callback = (dmChannel) => {
             if (dmChannel) {
-                user.game.broadcast.add(dmChannel);
+                this.broadcast.add(dmChannel);
             }
             super.add(user);
             if (this.users.length == 2) {
