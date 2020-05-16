@@ -8,6 +8,20 @@ const Emojis = require("../../enums/Emojis");
 module.exports = new Command({
     name: "game",
     description: "Play a game.",
+    arguments: [
+        {
+            name: "id",
+            description:
+                "The id of the game you want to join.\nOr use one of the subcommands below to create a new game.",
+            optional: true,
+        },
+    ],
+    examples: [
+        "{{command}} chakra-elements {{author}}",
+        "{{command}} e-card\n> `Cbjef13Ahcehhjg2C4-xo0A7eKCn`",
+        "{{command}} Cbjef13Ahcehhjg2C4-xo0A7eKCn",
+        "{{command}} quit",
+    ],
     async init() {
         (await fs.readdir(path.join(__dirname, "games"))).forEach((file) => {
             const game = require(`./games/${file}`);

@@ -107,7 +107,7 @@ class Ecard extends CardsGame {
 
 module.exports = new Command({
     name: "e-card",
-    description: "Play ecard.",
+    description: "Play E-Card.",
     aliases: ["ecard", "ecards", "e-cards"],
     execute({ message }) {
         Ecard.from(message);

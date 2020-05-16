@@ -231,6 +231,23 @@ class CardsGame extends PVPGame {
             super.quit(user);
         }
     }
+    setEvent(message, gameUser) {
+        message.react(Emojis.checkmark);
+        message.on("reactionAdd", (reaction, user) => {
+            if (user.bot) return;
+            if (user.id != gameUser.user.id) return;
+            if (reaction.emoji.toString() != Emojis.checkmark) return;
+            this.onReact(reaction, gameUser);
+        });
+    }
+    destroy() {
+        for (const gameUser of this.users) {
+            for (const message of gameUser.messages) {
+                message.removeAllListeners("reactionAdd");
+            }
+        }
+        super.destroy();
+    }
     get lastRound() {
         return this.round == this.maxRound;
     }

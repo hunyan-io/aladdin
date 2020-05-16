@@ -64,7 +64,7 @@ module.exports = new Command({
                       }s.`;
                 footer.text += `\ncode.labstack.com`;
             }
-            parameters.respond({
+            parameters.message.respond({
                 embed: {
                     color,
                     title,

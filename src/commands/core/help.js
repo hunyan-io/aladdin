@@ -115,10 +115,12 @@ module.exports = new Command({
                                 return commandName;
                             } else if (key == "prefix") {
                                 return parameters.prefix;
+                            } else if (key == "author") {
+                                return parameters.message.author;
                             }
                         })
                     )
-                    .join("\n");
+                    .join("\n\n");
         }
         if (
             command.subcommands &&

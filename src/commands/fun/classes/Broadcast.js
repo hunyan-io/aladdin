@@ -86,11 +86,11 @@ class Broadcast {
             for (let i = 0; i < channel.messages.length; i++) {
                 if (i === pos) continue;
                 channel.messages[i].delete();
-                delete channel.messages[i];
             }
             if (!isNaN(pos) && channel.messages[pos]) {
-                channel.messages[0] = channel.messages[pos];
-                delete channel.messages[pos];
+                channel.messages = [channel.messages[pos]];
+            } else {
+                channel.messages = [];
             }
         }
     }

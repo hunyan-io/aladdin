@@ -84,7 +84,7 @@ class ChakraElements extends CardsGame {
 
 module.exports = new Command({
     name: "chakra-elements",
-    description: "Play chakra elements.",
+    description: "Play Chakra Elements.",
     aliases: ["chakra", "elements", "chakraelements"],
     execute({ message }) {
         ChakraElements.from(message);
