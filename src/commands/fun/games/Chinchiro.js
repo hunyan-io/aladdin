@@ -48,7 +48,6 @@ class ChinchiroUser extends GameUser {
                     switch (reaction.emoji.toString()) {
                         case Emojis.crossmark:
                             this.rolls = 0;
-                            reaction.message.reactions.removeAll();
                         case Emojis.crossmark:
                         case Emojis.checkmark:
                             this.roll();

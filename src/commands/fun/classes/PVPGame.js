@@ -1,4 +1,3 @@
-const Emojis = require("../../../enums/Emojis");
 const Game = require("./Game");
 
 class PVPGame extends Game {
