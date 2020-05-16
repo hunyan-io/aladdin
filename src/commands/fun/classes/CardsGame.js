@@ -215,7 +215,7 @@ class CardsGame extends PVPGame {
                 }
             }
         }
-        this.broadcast.edit(0, message).finally(() => {
+        return this.broadcast.edit(0, message).finally(() => {
             if (gameOver) {
                 this.broadcast.reduce(0);
                 this.destroy();
@@ -224,8 +224,9 @@ class CardsGame extends PVPGame {
     }
     quit(user) {
         if (this.users.length >= 2) {
-            this.updateScores(true, user);
-            super.quit(user, false);
+            this.updateScores(true, user).then(() => {
+                super.quit(user, false);
+            });
         } else {
             super.quit(user);
         }
