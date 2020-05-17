@@ -8,6 +8,7 @@ class UBW extends PVPGame {
         });
         this.prefix = prefix;
         this.blades = 20;
+        this.lastThrow = null;
     }
     async start() {
         const rand = this.users[Math.floor(Math.random() * 2)];
@@ -19,7 +20,7 @@ class UBW extends PVPGame {
     }
     throw(n) {
         n = Number(n);
-        const possibility = [1, 2, 3].filter((x) => x !== this.turn.lastThrow);
+        const possibility = [1, 2, 3].filter((x) => x !== this.lastThrow);
         if (isNaN(n) || !possibility.includes(n)) {
             this.broadcast.send(
                 `You must throw ${possibility.join(" or ")} blades.`,
@@ -27,7 +28,7 @@ class UBW extends PVPGame {
             );
             return;
         }
-        this.turn.lastThrow = n;
+        this.lastThrow = n;
         this.blades -= n;
         if (this.blades <= 0) {
             this.broadcast.send(
