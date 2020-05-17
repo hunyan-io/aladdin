@@ -67,6 +67,8 @@ class ChinchiroUser extends GameUser {
             return [0, 0];
         } else if (rollStr == "4-5-6") {
             return [4, 0];
+        } else if (roll[0] == roll[1] && roll[1] == roll[2]) {
+            return [3, roll[0]];
         } else if (
             roll[0] == roll[1] ||
             roll[0] == roll[2] ||
@@ -79,8 +81,6 @@ class ChinchiroUser extends GameUser {
                     ? roll[1]
                     : roll[0];
             return [2, value];
-        } else if (roll[0] == roll[1] && roll[1] == roll[2]) {
-            return [3, roll[0]];
         } else {
             return [1, 0];
         }
