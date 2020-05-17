@@ -19,10 +19,15 @@ class UBW extends PVPGame {
     }
     throw(n) {
         n = Number(n);
-        if (isNaN(n) || (n != 1 && n != 2 && n != 3)) {
-            this.broadcast.send(`You must throw 1 or 2 or 3 blades.`, false);
+        const possibility = [1, 2, 3].filter((x) => x !== this.turn.lastThrow);
+        if (isNaN(n) || !possibility.includes(n)) {
+            this.broadcast.send(
+                `You must throw ${possibility.join(" or ")} blades.`,
+                false
+            );
             return;
         }
+        this.turn.lastThrow = n;
         this.blades -= n;
         if (this.blades <= 0) {
             this.broadcast.send(
